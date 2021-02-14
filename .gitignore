@@ -1,0 +1,7 @@
+.dist
+.vscode
+database.db
+*.mp3
+cache
+token.key
+ffmpeg.exe
