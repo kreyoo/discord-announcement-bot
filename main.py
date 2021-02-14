@@ -63,7 +63,11 @@ class bot(discord.Client):
                 pass
         
         def playsound(voice_client,filepath, after=go_away):
-            voice_client.play(discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(filepath), 1.0), after=after)
+            try:
+                if not voice_client.is_playing():
+                    voice_client.play(discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(filepath), 1.0), after=after)
+            except discord.errors.ClientException:
+                pass
 
         voice_connection = member.guild.voice_client
         member_leave_file = self.cache_path + str(member.guild.id) + "_"+str(member.id) + "_leave.mp3"
