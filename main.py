@@ -52,17 +52,11 @@ class bot(discord.Client):
     async def on_voice_state_update(self, member, voice_before, voice_after):
         self.loop.create_task(self.clear_cache())
         
-        def go_away(error):
-            if error:
-                print(error)
-            try:
-                voice_connection = member.guild.voice_client
-                if not voice_connection.is_playing():
-                    asyncio.run_coroutine_threadsafe(voice_connection.disconnect(), bot_instance.loop)
-            except Exception:
-                pass
+        def after_play(error):
+            pass
+
         
-        def playsound(voice_client,filepath, after=go_away):
+        def playsound(voice_client,filepath, after=after_play):
             try:
                 if not voice_client.is_playing():
                     voice_client.play(discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(filepath), 1.0), after=after)
@@ -112,40 +106,43 @@ class bot(discord.Client):
                 tts = gTTS(member.nick+" is unmuted now")
             else:
                 tts = gTTS(member.name+" is unmuted now")
-            tts.save(member_mute_file)
+            tts.save(member_unmute_file)
 
         if not os.path.basename(member_deafen_file) in self.get_cache_content():
             if member.nick:
                 tts = gTTS(member.nick+" is deafened now")
             else:
                 tts = gTTS(member.name+" is deafened now")
-            tts.save(member_mute_file)
+            tts.save(member_deafen_file)
 
         if not os.path.basename(member_undeafen_file) in self.get_cache_content():
             if member.nick:
                 tts = gTTS(member.nick+" is undeafened now")
             else:
                 tts = gTTS(member.name+" is undeafened now")
-            tts.save(member_mute_file)
-
+            tts.save(member_undeafen_file)
+        if voice_connection:
+            if voice_connection.is_playing():
+                return
         if voice_after.channel and not voice_before.channel:
             voice_connection = await self.join_voice_channel(voice_connection, voice_after)
             playsound(voice_connection, member_join_file)
         elif voice_before.channel and not voice_after.channel:
             voice_connection = await self.join_voice_channel(voice_connection, voice_before)
             playsound(voice_connection, member_leave_file)
-        elif voice_after.mute and not voice_before.mute:
-            voice_connection = await self.join_voice_channel(voice_connection, voice_after)
-            playsound(voice_connection, member_mute_file)
-        elif voice_before.mute and not voice_after.mute:
-            voice_connection = await self.join_voice_channel(voice_connection, voice_after)
-            playsound(voice_connection, member_unmute_file)
-        elif voice_before.deaf and not voice_after.deaf:
+        elif (voice_before.deaf and not voice_after.deaf) or (voice_before.self_deaf and not voice_after.self_deaf):
             voice_connection = await self.join_voice_channel(voice_connection, voice_after)
             playsound(voice_connection, member_undeafen_file)
-        elif voice_after.deaf and not voice_before.deaf:
+        elif (voice_after.deaf and not voice_before.deaf) or (voice_after.self_deaf and not voice_before.self_deaf):
             voice_connection = await self.join_voice_channel(voice_connection, voice_after)
             playsound(voice_connection, member_deafen_file)
+        elif (voice_after.mute and not voice_before.mute) or (voice_after.self_mute and not voice_before.self_mute):
+            voice_connection = await self.join_voice_channel(voice_connection, voice_after)
+            playsound(voice_connection, member_mute_file)
+        elif (voice_before.mute and not voice_after.mute) or (voice_before.self_mute and not voice_after.self_mute):
+            voice_connection = await self.join_voice_channel(voice_connection, voice_after)
+            playsound(voice_connection, member_unmute_file)
+        
 
 
 try:

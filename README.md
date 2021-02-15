@@ -10,7 +10,7 @@ This is a discord bot which announces joining, leaving, muting, unmuting, deafen
 <p>
 
 In the directory do
-```pip install -r requirements.txt```
+`pip install -r requirements.txt`
 to get the python modules.
 </p>
 
@@ -19,7 +19,7 @@ to get the python modules.
 If you are on a **linux-based system**, you must install ffmpeg.
 
 For Distributions of **Ubuntu** or **Debian** you could use:
-```sudo apt install -y ffmpeg```
+`sudo apt install -y ffmpeg`
 </p>
 <p>
 
@@ -28,9 +28,9 @@ Then create a token.key file and insert your bot token into it.
 <p>
 
 After that you can start the bot with
-```python main.py``` (Windows)
+`python main.py` (Windows)
 
-```python3 main.py``` (Linux)
+`python3 main.py` (Linux)
 </p>
 
 <p>
